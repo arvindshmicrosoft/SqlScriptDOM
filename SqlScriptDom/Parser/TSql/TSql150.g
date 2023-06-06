@@ -29237,18 +29237,13 @@ sortedDataOptions
 
 columnWithSortOrder returns [ColumnWithSortOrder vResult = this.FragmentFactory.CreateFragment<ColumnWithSortOrder>()]
 {
-    ColumnReferenceExpression vColumn = FragmentFactory.CreateFragment<ColumnReferenceExpression>();
+    ColumnReferenceExpression vColumn;
     SortOrder vOrder;
 }
-    : (vColumn=identifierColumnReferenceExpression
+    : vColumn=identifierColumnReferenceExpression
         {
             vResult.Column = vColumn;
         }
-        | graphPseudoColumn[vColumn]
-        {
-            vResult.Column = vColumn;
-        }
-        )
         (vOrder = orderByOption[vResult]
             {
                 vResult.SortOrder = vOrder;
