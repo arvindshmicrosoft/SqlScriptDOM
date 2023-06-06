@@ -104,6 +104,8 @@ CREATE TABLE [dbo].[node_3] (c1 int, index idx nonclustered columnstore($node_id
 
 CREATE TABLE [dbo].[node_4] (c1 int, index idx nonclustered columnstore(c1, $node_id)) AS NODE;
 
+create index NC_node_4	ON node_4 (c1) INCLUDE ($node_id);
+
 -- Inline indexes require another column element, so inline indexes don't work on edge tables
 -- without a column.
 --
@@ -116,3 +118,10 @@ CREATE TABLE [dbo].[edge_3] (c1 int, index idx nonclustered ($to_id, $from_id, $
 CREATE TABLE [dbo].[edge_4] (c1 int, index idx nonclustered columnstore ($edge_id, c1)) AS EDGE;
 
 CREATE TABLE [dbo].[edge_5] (c1 int, index idx nonclustered columnstore ($from_id, $to_id, $edge_id, c1)) AS EDGE;
+
+-- attempt to force a seek via. the graph unique index - works
+select * from n1 WITH (FORCESEEK, INDEX(graph_unique_n1)) WHERE $node_id = NODE_ID_FROM_PARTS(OBJECT_ID('n1'), 1)
+
+-- same intent, but with the "parameterized" FORCESEEK syntax, Fails with Msg 362, Level 16, State 1, Line 7
+-- The query processor could not produce a query plan because the name '$node_id' in the FORCESEEK hint on table or view 'n1' did not match the key column names of the index 'graph_unique_n1'.
+select * from n1 WITH (FORCESEEK(graph_unique_n1($node_id))) WHERE $node_id = NODE_ID_FROM_PARTS(OBJECT_ID('n1'), 1)

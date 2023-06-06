@@ -18776,16 +18776,26 @@ columnListWithParenthesis [TSqlFragment vParent, IList<ColumnReferenceExpression
 
 identifierColumnList [TSqlFragment vParent, IList<ColumnReferenceExpression> columns]
 {
-    ColumnReferenceExpression vColumn;
+    ColumnReferenceExpression vColumn = FragmentFactory.CreateFragment<ColumnReferenceExpression>();
 }
-    : LeftParenthesis vColumn = identifierColumnReferenceExpression
+    : LeftParenthesis (vColumn = identifierColumnReferenceExpression
         {
             AddAndUpdateTokenInfo(vParent, columns, vColumn);
         }
-        (Comma vColumn = identifierColumnReferenceExpression
+        | graphPseudoColumn[vColumn]
+        {
+            AddAndUpdateTokenInfo(vParent, columns, vColumn);
+        }
+        )
+        (Comma (vColumn = identifierColumnReferenceExpression
             {
                 AddAndUpdateTokenInfo(vParent, columns, vColumn);
             }
+        | graphPseudoColumn[vColumn]
+        {
+            AddAndUpdateTokenInfo(vParent, columns, vColumn);
+        }
+        )
         )*
         tRParen:RightParenthesis
         {
@@ -20794,7 +20804,7 @@ literalTableHint returns [LiteralTableHint vResult = FragmentFactory.CreateFragm
 forceSeekTableHint [bool indexHintAllowed] returns [ForceSeekTableHint vResult = FragmentFactory.CreateFragment<ForceSeekTableHint>()]
 {
     IdentifierOrValueExpression vIndexValue;
-    ColumnReferenceExpression vColumnValue;
+    ColumnReferenceExpression vColumnValue = FragmentFactory.CreateFragment<ColumnReferenceExpression>();
 }
 :   tForceSeek:Identifier
         {
@@ -20810,15 +20820,25 @@ forceSeekTableHint [bool indexHintAllowed] returns [ForceSeekTableHint vResult =
 
                 vResult.IndexValue = vIndexValue;
             }
-            LeftParenthesis vColumnValue = identifierColumnReferenceExpression
+            LeftParenthesis (vColumnValue = identifierColumnReferenceExpression
             {
                 AddAndUpdateTokenInfo(vResult, vResult.ColumnValues, vColumnValue);
             }
+            | graphPseudoColumn[vColumnValue]
+            {
+                AddAndUpdateTokenInfo(vResult, vResult.ColumnValues, vColumnValue);
+            }
+            )
             (
-                Comma vColumnValue = identifierColumnReferenceExpression
+                Comma (vColumnValue = identifierColumnReferenceExpression 
                 {
                     AddAndUpdateTokenInfo(vResult, vResult.ColumnValues, vColumnValue);
                 }
+                | graphPseudoColumn[vColumnValue]
+                {
+                    AddAndUpdateTokenInfo(vResult, vResult.ColumnValues, vColumnValue);
+                }
+                )
             )*
             RightParenthesis tRParen:RightParenthesis
             {
@@ -29217,13 +29237,18 @@ sortedDataOptions
 
 columnWithSortOrder returns [ColumnWithSortOrder vResult = this.FragmentFactory.CreateFragment<ColumnWithSortOrder>()]
 {
-    ColumnReferenceExpression vColumn;
+    ColumnReferenceExpression vColumn = FragmentFactory.CreateFragment<ColumnReferenceExpression>();
     SortOrder vOrder;
 }
-    : vColumn=identifierColumnReferenceExpression
+    : (vColumn=identifierColumnReferenceExpression
         {
             vResult.Column = vColumn;
         }
+        | graphPseudoColumn[vColumn]
+        {
+            vResult.Column = vColumn;
+        }
+        )
         (vOrder = orderByOption[vResult]
             {
                 vResult.SortOrder = vOrder;
