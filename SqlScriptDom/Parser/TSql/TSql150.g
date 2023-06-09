@@ -18787,7 +18787,11 @@ identifierColumnList [TSqlFragment vParent, IList<ColumnReferenceExpression> col
             AddAndUpdateTokenInfo(vParent, columns, vColumn);
         }
         )
-        (Comma (vColumn = identifierColumnReferenceExpression
+        (Comma
+        {
+            vColumn = FragmentFactory.CreateFragment<ColumnReferenceExpression>();
+        }
+        (vColumn = identifierColumnReferenceExpression
             {
                 AddAndUpdateTokenInfo(vParent, columns, vColumn);
             }
@@ -20830,7 +20834,11 @@ forceSeekTableHint [bool indexHintAllowed] returns [ForceSeekTableHint vResult =
             }
             )
             (
-                Comma (vColumnValue = identifierColumnReferenceExpression 
+                Comma
+                {
+                    vColumnValue = FragmentFactory.CreateFragment<ColumnReferenceExpression>();
+                }
+                (vColumnValue = identifierColumnReferenceExpression
                 {
                     AddAndUpdateTokenInfo(vResult, vResult.ColumnValues, vColumnValue);
                 }
