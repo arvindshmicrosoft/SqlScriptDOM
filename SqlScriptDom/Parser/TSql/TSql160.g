@@ -21050,29 +21050,19 @@ forceSeekTableHint [bool indexHintAllowed] returns [ForceSeekTableHint vResult =
 
                 vResult.IndexValue = vIndexValue;
             }
-            LeftParenthesis (vColumnValue = identifierColumnReferenceExpression
+            LeftParenthesis vColumnValue = identifierColumnReferenceExpression
             {
                 AddAndUpdateTokenInfo(vResult, vResult.ColumnValues, vColumnValue);
             }
-            | graphPseudoColumn[vColumnValue]
-            {
-                AddAndUpdateTokenInfo(vResult, vResult.ColumnValues, vColumnValue);
-            }
-            )
             (
                 Comma
                 {
                     vColumnValue = FragmentFactory.CreateFragment<ColumnReferenceExpression>();
                 }
-                (vColumnValue = identifierColumnReferenceExpression
+                vColumnValue = identifierColumnReferenceExpression
                 {
                     AddAndUpdateTokenInfo(vResult, vResult.ColumnValues, vColumnValue);
                 }
-                | graphPseudoColumn[vColumnValue]
-                {
-                    AddAndUpdateTokenInfo(vResult, vResult.ColumnValues, vColumnValue);
-                }
-                )
             )*
             RightParenthesis tRParen:RightParenthesis
             {
