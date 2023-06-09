@@ -28,8 +28,4 @@
     <EmbeddedResource Include="PhaseOneTestScripts\*.sql" />
     <EmbeddedResource Include="TestScripts\*.sql" />
   </ItemGroup>
-  <ItemGroup>
-    <None Remove="Baselines160\GraphDbSyntaxTests160.sql" />
-    <None Remove="TestScripts\GraphDbSyntaxTests160.sql" />
-  </ItemGroup>
 </Project>

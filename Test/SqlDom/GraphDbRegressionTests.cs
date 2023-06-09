@@ -63,5 +63,26 @@ namespace SqlStudio.Tests.UTSqlScriptDom
                 }
             }, new TSql150Parser(true), new TSql160Parser(true));
         }
+
+        /// <summary>
+        /// Currently, graph pseudo columns are not supported in the ORDER clause for a clustered columnstore index
+        /// This was added as regression test when fixing https://github.com/microsoft/SqlScriptDOM/issues/25.
+        /// </summary>
+        [TestMethod]
+        [Priority(0)]
+        [SqlStudioTestCategory(Category.UnitTest)]
+        public void DisallowGraphPseudoColumnsInOrderedClusteredColumnstore()
+        {
+            ParserTestUtils.ExecuteTestForParsers(parser =>
+            {
+                string script = @"create clustered columnstore index occi1 on n1 ORDER (c1, $node_id, c2)";
+                using (var scriptReader = new StringReader(script))
+                {
+                    var fragment = parser.Parse(scriptReader, out IList<ParseError> errors) as TSqlScript;
+                    Assert.AreEqual(1, errors.Count);
+                    Assert.AreEqual("Incorrect syntax near $node_id.", errors[0].Message);
+                }
+            }, new TSql130Parser(true), new TSql140Parser(true), new TSql150Parser(true), new TSql160Parser(true));
+        }
     }
 }

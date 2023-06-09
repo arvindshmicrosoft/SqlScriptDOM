@@ -1,2 +1,0 @@
-CREATE COLUMNSTORE INDEX occi1
-    ON n1(c1, $NODE_ID, c2);

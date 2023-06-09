@@ -16821,6 +16821,15 @@ createColumnStoreIndexStatement [IToken tUnique, bool? isClustered] returns [Cre
             tOrder:Order
             (
                 identifierColumnList[vResult, vResult.OrderedColumns]
+                {
+					foreach (var col in vResult.OrderedColumns)
+					{
+						if (col.ColumnType == ColumnType.PseudoColumnGraphNodeId || col.ColumnType == ColumnType.PseudoColumnGraphEdgeId || col.ColumnType == ColumnType.PseudoColumnGraphFromId || col.ColumnType == ColumnType.PseudoColumnGraphToId)
+						{
+							ThrowIncorrectSyntaxErrorException(col);
+						}
+					}
+                }
             )
         )?
     {
