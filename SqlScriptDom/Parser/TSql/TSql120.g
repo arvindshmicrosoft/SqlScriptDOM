@@ -2849,17 +2849,41 @@ azureEditionDatabaseOption returns [LiteralDatabaseOption vResult=FragmentFactor
         }
     ;
 
+elasticPoolParameter returns [ElasticPoolParameter vResult = FragmentFactory.CreateFragment<ElasticPoolParameter>()]
+{
+    Identifier vIdentifier;
+}
+        : tElasticPool:Identifier LeftParenthesis tName:Identifier EqualsSign vIdentifier=identifier RightParenthesis
+        {
+            Match(tElasticPool, CodeGenerationSupporter.ElasticPool);
+            Match(tName, CodeGenerationSupporter.Name);
+            vResult.ElasticPoolName = vIdentifier;
+        }
+    ;
+
 azureServiceObjectiveDatabaseOption returns [LiteralDatabaseOption vResult=FragmentFactory.CreateFragment<LiteralDatabaseOption>()]
 {
     Literal vValue;
+    ElasticPoolParameter vElasticPool;
 }
-    : tServiceObjective:Identifier EqualsSign vValue=stringLiteral
+    : tServiceObjective:Identifier EqualsSign 
+        (
+        vValue = stringLiteral
         {
             Match(tServiceObjective, CodeGenerationSupporter.ServiceObjective);
             UpdateTokenInfo(vResult, tServiceObjective);
             vResult.OptionKind = DatabaseOptionKind.ServiceObjective;
             vResult.Value = vValue;
         }
+        | vElasticPool = elasticPoolParameter
+        {
+            Match(tServiceObjective, CodeGenerationSupporter.ServiceObjective);
+            UpdateTokenInfo(vElasticPool, tServiceObjective);
+            vResult.OptionKind = DatabaseOptionKind.ServiceObjective;
+            vResult.Value = new StringLiteral();
+            vResult.Value.Value = "foo";
+        }
+        )
     ;
 
 azureAsCopyOf[CreateDatabaseStatement vParent]
