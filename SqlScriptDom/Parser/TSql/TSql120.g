@@ -2809,6 +2809,8 @@ azureOption returns [DatabaseOption vResult]
        vResult=azureMaxSizeDatabaseOption
      | {NextTokenMatches(CodeGenerationSupporter.Edition)}?
        vResult=azureEditionDatabaseOption
+     | {LA(3) == Identifier && LA(4) == LeftParenthesis}?
+       vResult=azureElasticPoolServiceObjectiveDatabaseOption
      | vResult=azureServiceObjectiveDatabaseOption
     ;
 
@@ -2858,32 +2860,34 @@ elasticPoolParameter returns [ElasticPoolParameter vResult = FragmentFactory.Cre
             Match(tElasticPool, CodeGenerationSupporter.ElasticPool);
             Match(tName, CodeGenerationSupporter.Name);
             vResult.ElasticPoolName = vIdentifier;
+            vResult.OptionKind = DatabaseOptionKind.ServiceObjective;
         }
     ;
 
 azureServiceObjectiveDatabaseOption returns [LiteralDatabaseOption vResult=FragmentFactory.CreateFragment<LiteralDatabaseOption>()]
 {
     Literal vValue;
-    ElasticPoolParameter vElasticPool;
 }
-    : tServiceObjective:Identifier EqualsSign 
-        (
-        vValue = stringLiteral
+    : tServiceObjective:Identifier EqualsSign vValue = stringLiteral
         {
             Match(tServiceObjective, CodeGenerationSupporter.ServiceObjective);
             UpdateTokenInfo(vResult, tServiceObjective);
             vResult.OptionKind = DatabaseOptionKind.ServiceObjective;
             vResult.Value = vValue;
         }
-        | vElasticPool = elasticPoolParameter
+    ;
+
+azureElasticPoolServiceObjectiveDatabaseOption returns [ElasticPoolParameter vResult=FragmentFactory.CreateFragment<ElasticPoolParameter>()]
+{
+    ElasticPoolParameter vElasticPool;
+}
+    : tServiceObjective:Identifier EqualsSign vElasticPool = elasticPoolParameter
         {
             Match(tServiceObjective, CodeGenerationSupporter.ServiceObjective);
             UpdateTokenInfo(vElasticPool, tServiceObjective);
-            vResult.OptionKind = DatabaseOptionKind.ServiceObjective;
-            vResult.Value = new StringLiteral();
-            vResult.Value.Value = "foo";
+            vResult = vElasticPool;
+            //vResult.Value.Value = "ELASTIC_POOL (NAME = [" + vElasticPool.ElasticPoolName.Value + "] ))";
         }
-        )
     ;
 
 azureAsCopyOf[CreateDatabaseStatement vParent]

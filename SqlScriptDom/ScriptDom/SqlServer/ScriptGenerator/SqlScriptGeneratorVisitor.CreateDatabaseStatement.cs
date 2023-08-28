@@ -17,6 +17,7 @@ namespace Microsoft.SqlServer.TransactSql.ScriptDom.ScriptGenerator
             DatabaseOptionKind.MaxSize,
             DatabaseOptionKind.Edition,
             DatabaseOptionKind.ServiceObjective
+            //DatabaseOptionKind.ElasticPoolServiceObjective
         };
 
         private static Dictionary<AttachMode, TokenGenerator> _attachModeGenerators = new Dictionary<AttachMode, TokenGenerator>()

@@ -452,7 +452,7 @@ namespace Microsoft.SqlServer.TransactSql.ScriptDom.ScriptGenerator
             GenerateKeyword(symbolId);
         }
 
-        // generate a token for a given token type and text
+        // generate a token for a given token type and textv
         protected void GenerateToken(TSqlTokenType tokenType, String text)
         {
             TSqlParserToken token = new TSqlParserToken(tokenType, text);

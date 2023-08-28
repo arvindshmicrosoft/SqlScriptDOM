@@ -23,6 +23,7 @@ namespace Microsoft.SqlServer.TransactSql.ScriptDom
             
             // 120 options
             AddOptionMapping(DatabaseOptionKind.ServiceObjective, CodeGenerationSupporter.ServiceObjective, SqlVersionFlags.TSql120AndAbove);
+            //AddOptionMapping(DatabaseOptionKind.ElasticPoolServiceObjective, CodeGenerationSupporter.ElasticPool, SqlVersionFlags.TSql120AndAbove);
 
             // 130 Options
             AddOptionMapping(DatabaseOptionKind.QueryStore, CodeGenerationSupporter.QueryStore, SqlVersionFlags.TSql130AndAbove);
