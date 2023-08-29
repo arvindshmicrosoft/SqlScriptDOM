@@ -2851,19 +2851,6 @@ azureEditionDatabaseOption returns [LiteralDatabaseOption vResult=FragmentFactor
         }
     ;
 
-elasticPoolParameter returns [ElasticPoolParameter vResult = FragmentFactory.CreateFragment<ElasticPoolParameter>()]
-{
-    Identifier vIdentifier;
-}
-        : tElasticPool:Identifier LeftParenthesis tName:Identifier EqualsSign vIdentifier=identifier RightParenthesis
-        {
-            Match(tElasticPool, CodeGenerationSupporter.ElasticPool);
-            Match(tName, CodeGenerationSupporter.Name);
-            vResult.ElasticPoolName = vIdentifier;
-            vResult.OptionKind = DatabaseOptionKind.ServiceObjective;
-        }
-    ;
-
 azureServiceObjectiveDatabaseOption returns [LiteralDatabaseOption vResult=FragmentFactory.CreateFragment<LiteralDatabaseOption>()]
 {
     Literal vValue;
@@ -2879,14 +2866,16 @@ azureServiceObjectiveDatabaseOption returns [LiteralDatabaseOption vResult=Fragm
 
 azureElasticPoolServiceObjectiveDatabaseOption returns [ElasticPoolParameter vResult=FragmentFactory.CreateFragment<ElasticPoolParameter>()]
 {
-    ElasticPoolParameter vElasticPool;
+    Identifier vIdentifier;
 }
-    : tServiceObjective:Identifier EqualsSign vElasticPool = elasticPoolParameter
+    : tServiceObjective:Identifier EqualsSign tElasticPool:Identifier LeftParenthesis tName:Identifier EqualsSign vIdentifier=identifier RightParenthesis
         {
             Match(tServiceObjective, CodeGenerationSupporter.ServiceObjective);
-            UpdateTokenInfo(vElasticPool, tServiceObjective);
-            vResult = vElasticPool;
-            //vResult.Value.Value = "ELASTIC_POOL (NAME = [" + vElasticPool.ElasticPoolName.Value + "] ))";
+            Match(tElasticPool, CodeGenerationSupporter.ElasticPool);
+            Match(tName, CodeGenerationSupporter.Name);
+            vResult.ElasticPoolName = vIdentifier;
+            vResult.OptionKind = DatabaseOptionKind.ServiceObjective;
+            UpdateTokenInfo(vResult, tServiceObjective);
         }
     ;
 
