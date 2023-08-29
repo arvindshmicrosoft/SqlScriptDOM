@@ -2855,7 +2855,7 @@ azureServiceObjectiveDatabaseOption returns [LiteralDatabaseOption vResult=Fragm
 {
     Literal vValue;
 }
-    : tServiceObjective:Identifier EqualsSign vValue = stringLiteral
+    : tServiceObjective:Identifier EqualsSign vValue=stringLiteral
         {
             Match(tServiceObjective, CodeGenerationSupporter.ServiceObjective);
             UpdateTokenInfo(vResult, tServiceObjective);

@@ -17,7 +17,7 @@ namespace Microsoft.SqlServer.TransactSql.ScriptDom.ScriptGenerator
             bool azureOnlyOption = true;
             foreach(DatabaseOption option in node.Options)
             {
-                if (option.OptionKind != DatabaseOptionKind.MaxSize && option.OptionKind != DatabaseOptionKind.Edition && option.OptionKind != DatabaseOptionKind.ServiceObjective /*&& option.OptionKind != DatabaseOptionKind.ElasticPoolServiceObjective*/)
+                if (option.OptionKind != DatabaseOptionKind.MaxSize && option.OptionKind != DatabaseOptionKind.Edition && option.OptionKind != DatabaseOptionKind.ServiceObjective)
                 {
                     azureOnlyOption = false;
                     break;
